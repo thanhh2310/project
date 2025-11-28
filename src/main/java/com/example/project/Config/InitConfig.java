@@ -29,8 +29,6 @@ public class InitConfig {
                 role.setName(roleName.name());
                 role.setDescription("Vai tro la: " + roleName);
                 roleRepository.save(role);
-            }else {
-                throw new WebErrorConfig(ErrorCode.ROLE_ALREADY_EXISTED);
             }
         }
 

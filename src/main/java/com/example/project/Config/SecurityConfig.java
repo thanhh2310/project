@@ -2,11 +2,14 @@ package com.example.project.Config;
 
 import com.example.project.Auth.JwtAuthenticationFilter;
 import com.example.project.Auth.JwtUtils;
+import com.example.project.Service.OAuth2LoginSuccessHandler;
 import com.example.project.Service.RedisService;
 import com.example.project.Service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,7 +23,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
@@ -45,27 +51,15 @@ public class SecurityConfig {
                 .sessionManagement(sess-> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(basic -> basic.disable())
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/auth/**").permitAll()
+                        auth.requestMatchers("/auth/**", "/login/oauth2/**").permitAll()
                                 .requestMatchers("/public/**").permitAll()
                                 .requestMatchers("/users/**").hasAnyRole("USER","ADMIN")
                                 .anyRequest().authenticated()
                 )
-//                .formLogin(Customizer.withDefaults())
-//                .oauth2Login(
-//                        oauth2 -> oauth2.userInfoEndpoint(
-//                                        userInfo-> userInfo.userService(oauth2UserService())
-//                                )
-//                                .successHandler((request, response, authentication) ->{
-//                                    CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
-//                                    User user = userService.processOAuthPostLogin(customOAuth2User.getEmail());
-//                                    String token = jwtUtils.generateToken(user);
-//                                    String refreshToken = jwtUtils.generateRefreshToken(user);
-//
-//                                    response.setContentType("application/json");
-//                                    response.getWriter().write("{\"token\": \"" + token + "\"}");
-//                                    response.getWriter().write("{\"refresh token\": \"" + refreshToken + "\"}");
-//                                } )
-//                )
+                .formLogin(Customizer.withDefaults())
+                .oauth2Login(oauth2-> oauth2
+                        .successHandler(oAuth2LoginSuccessHandler)
+                )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
