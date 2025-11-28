@@ -80,4 +80,9 @@ public class User extends BaseEntity implements UserDetails {
     public String getUsername() {
         return this.firstName + this.lastName;
     }
+
+    @Override
+    public boolean isEnabled() {
+        return this.isActive;
+    }
 }
