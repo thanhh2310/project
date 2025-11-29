@@ -51,12 +51,16 @@ public class SecurityConfig {
                 .sessionManagement(sess-> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(basic -> basic.disable())
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/auth/**", "/login/oauth2/**").permitAll()
+                        auth.requestMatchers("/auth/**", "/login/oauth2/**","/error").permitAll()
                                 .requestMatchers("/public/**").permitAll()
                                 .requestMatchers("/users/**").hasAnyRole("USER","ADMIN")
+                                .requestMatchers(
+                                        "/auth/logout",
+                                        "/auth/change-password"
+                                ).authenticated()
                                 .anyRequest().authenticated()
                 )
-                .formLogin(Customizer.withDefaults())
+//                .formLogin(Customizer.withDefaults())
                 .oauth2Login(oauth2-> oauth2
                         .successHandler(oAuth2LoginSuccessHandler)
                 )

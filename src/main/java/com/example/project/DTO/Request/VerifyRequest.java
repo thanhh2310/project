@@ -11,7 +11,7 @@ public class VerifyRequest {
     @Email(message = "Invalid email format")
     String email;
 
-    @Size(max = 5, message = "maximum 5 numbers")
+    @Size(min = 6,max = 6, message = "maximum 5 numbers")
     @NotBlank(message = "Otp cannot be blank")
     String code;
 }

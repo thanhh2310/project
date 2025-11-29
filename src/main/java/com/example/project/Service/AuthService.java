@@ -177,14 +177,19 @@ public class AuthService {
     public void changePassword(ChangePasswordRequest request){
         // Lấy User hiện tại từ SecurityContext (Người đang đăng nhập)
         var authentication = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = (User) authentication.getPrincipal();
+        String currentEmail =  authentication.getName();
+
+        System.out.println("DEBUG: Authentication Name is: " + currentEmail);
+
+        User currentUser = userRepository.findByEmail(currentEmail)
+                .orElseThrow(() -> new WebErrorConfig(ErrorCode.USER_NOT_FOUND));
 
         // Check mật khẩu cũ có đúng không
         if(!passwordEncoder.matches(request.getCurrentPassword(), currentUser.getPassword())){
             throw new WebErrorConfig(ErrorCode.PASSWORD_NOT_CORRECT);
         }
         // Check mật khẩu mới và confirm có khớp nhau không
-        if(request.getNewPassword().equals(request.getConfirmationPassword())){
+        if(!request.getNewPassword().equals(request.getConfirmationPassword())){
             throw new WebErrorConfig(ErrorCode.PASSWORD_NOT_MATCH);
         }
         // Lưu mật khẩu mới

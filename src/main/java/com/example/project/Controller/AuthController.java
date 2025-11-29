@@ -2,6 +2,7 @@ package com.example.project.Controller;
 
 import com.example.project.DTO.Request.*;
 import com.example.project.DTO.Response.ApiResponse;
+import com.example.project.DTO.Response.TokenResponse;
 import com.example.project.Service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,11 +34,12 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ApiResponse<Void> login(@RequestBody @Valid LoginRequest request){
-        authService.login(request);
-        return ApiResponse.<Void>builder()
+    public ApiResponse<TokenResponse> login(@RequestBody @Valid LoginRequest request){
+        var result = authService.login(request);
+        return ApiResponse.<TokenResponse>builder()
                 .code(200)
                 .message("Login successfully")
+                .data(result)
                 .build();
     }
 
