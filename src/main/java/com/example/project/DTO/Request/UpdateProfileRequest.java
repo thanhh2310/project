@@ -1,0 +1,23 @@
+package com.example.project.DTO.Request;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
+
+@Data
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class UpdateProfileRequest {
+    @Email(message = "Invalid email format")
+    String email;
+
+    String lastName;
+    String firstName;
+
+    @Pattern(regexp = "^\\d{10,11}$", message = "Phone number must be 10-11 digits")
+    String phoneNumber;
+}
