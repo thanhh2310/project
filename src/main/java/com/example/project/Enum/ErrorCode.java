@@ -13,7 +13,9 @@ public enum ErrorCode {
     PASSWORD_NOT_CORRECT(104,"Password is not correct" ),
     UNAUTHENTICATED(9998,"Unauthenticated" ),
     EMAIL_OR_PASSWORD_NOT_CORRECT(105, "Email or password is not correct"),
-    PASSWORD_NOT_MATCH(106, "Confirm password is not true" );
+    PASSWORD_NOT_MATCH(106, "Confirm password is not true" ),
+    BRAND_ALREADY_EXISTS(301,"Brand have already existed" ),
+    BRAND_NOT_FOUND(302, "Brand not found" );
 
     ErrorCode(int code, String message) {
         this.code = code;

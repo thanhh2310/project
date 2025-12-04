@@ -4,14 +4,18 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "bands")
+@Table(name = "brands")
 @EqualsAndHashCode(callSuper = true)
+@SQLDelete(sql = "UPDATE brands SET deleted_at = CURRENT_TIMESTAMP, is_active = false WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
 public class Brand  extends BaseEntity {
     private String name;
     private String slug;
