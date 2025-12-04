@@ -12,9 +12,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UpdateProfileRequest {
-    @Email(message = "Invalid email format")
-    String email;
-
     String lastName;
     String firstName;
 

@@ -57,6 +57,8 @@ public class UserService implements UserDetailsService {
         var authenticate = SecurityContextHolder.getContext().getAuthentication();
         String email = authenticate.getName();
 
+        System.out.println("EMAIL: " + email);
+
         // tim nguoi dung bang email
         User user = userRepository.findByEmail(email)
                 .orElseThrow(()-> new WebErrorConfig(ErrorCode.USER_NOT_FOUND));

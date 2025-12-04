@@ -70,7 +70,7 @@ public class UserController {
                 .build();
     }
 
-    @PutMapping("/{id}")
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('USER_DELETE')")
     public ApiResponse<Void> deleteUser(@PathVariable Integer id){
         userService.deleteUser(id);
