@@ -32,7 +32,7 @@ import java.util.Set;
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @SQLDelete(sql = "UPDATE users SET deleted_at = CURRENT_TIMESTAMP, is_active = false WHERE id = ?")
-@Where(clause = "deleted_at IS NULL")
+//@Where(clause = "deleted_at IS NULL")
 public class User extends BaseEntity implements UserDetails {
 
     @Column(name = "email", nullable = false, unique = true, length = 255)

@@ -13,7 +13,6 @@ import org.hibernate.validator.constraints.URL;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class BrandCreationRequest {
     @NotBlank(message = "Brand name is required")
     @Size(min = 2, max = 100, message = "Brand name must be between 2 and 100 characters")
