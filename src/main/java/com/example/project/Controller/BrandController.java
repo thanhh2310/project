@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("brands") // Thêm versioning v1 cho chuyên nghiệp
+@RequestMapping("brands")
 @RequiredArgsConstructor
 public class BrandController {
 
@@ -21,7 +21,7 @@ public class BrandController {
 
     // --- PUBLIC API ---
 
-    @GetMapping
+    @GetMapping()
     public ApiResponse<List<BrandResponse>> getAllBrands() {
         return ApiResponse.<List<BrandResponse>>builder()
                 .code(200)

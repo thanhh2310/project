@@ -8,6 +8,7 @@ import com.example.project.Service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
@@ -53,8 +54,10 @@ public class SecurityConfig {
                 .sessionManagement(sess-> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(basic -> basic.disable())
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/auth/**", "/login/oauth2/**","/error").permitAll()
-                                .requestMatchers("/public/**").permitAll()
+                        auth.requestMatchers("/auth/**",
+                                        "/login/oauth2/**","/error",
+                                        "/categories/**",
+                                        "/brands/**").permitAll()
                                 .requestMatchers("/users/**").hasAnyRole("USER","ADMIN")
                                 .requestMatchers(
                                         "/auth/logout",

@@ -15,7 +15,10 @@ public enum ErrorCode {
     EMAIL_OR_PASSWORD_NOT_CORRECT(105, "Email or password is not correct"),
     PASSWORD_NOT_MATCH(106, "Confirm password is not true" ),
     BRAND_ALREADY_EXISTS(301,"Brand have already existed" ),
-    BRAND_NOT_FOUND(302, "Brand not found" );
+    BRAND_NOT_FOUND(302, "Brand not found" ),
+    CATEGORY_NOT_FOUND(304,"Category not found" ),
+    CATEGORY_ALREADY_EXISTS(305,"Category have already existed" ),
+    INVALID_PARENT(306,"Category cannot be its own parent" );
 
     ErrorCode(int code, String message) {
         this.code = code;
