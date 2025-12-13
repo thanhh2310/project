@@ -4,6 +4,7 @@ import com.example.project.DTO.Request.UpdateProfileRequest;
 import com.example.project.DTO.Request.UserCreationRequest;
 import com.example.project.DTO.Request.UserUpdateRequest;
 import com.example.project.DTO.Response.ApiResponse;
+import com.example.project.DTO.Response.PageResponse;
 import com.example.project.DTO.Response.ProfileResponse;
 import com.example.project.DTO.Response.UserResponse;
 import com.example.project.Service.UserService;
@@ -42,11 +43,14 @@ public class UserController {
     //------ api cho admin
     @GetMapping
     @PreAuthorize("hasAuthority('USER_VIEW')")
-    public ApiResponse<List<UserResponse>> getAllUser(){
-        return ApiResponse.<List<UserResponse>>builder()
+    public ApiResponse<PageResponse<UserResponse>> getAllUser(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        return ApiResponse.<PageResponse<UserResponse>>builder()
                 .code(200)
-                .message("Get all user successfully")
-                .data(userService.getAllUser())
+                .message("Get all users successfully")
+                .data(userService.getAllUser(page, size))
                 .build();
     }
 

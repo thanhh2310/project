@@ -4,6 +4,7 @@ import com.example.project.Config.WebErrorConfig;
 import com.example.project.DTO.Request.UpdateProfileRequest;
 import com.example.project.DTO.Request.UserCreationRequest;
 import com.example.project.DTO.Request.UserUpdateRequest;
+import com.example.project.DTO.Response.PageResponse;
 import com.example.project.DTO.Response.ProfileResponse;
 import com.example.project.DTO.Response.UserResponse;
 import com.example.project.Enum.ErrorCode;
@@ -11,6 +12,10 @@ import com.example.project.Mapper.UserMapper;
 import com.example.project.Model.User;
 import com.example.project.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -70,12 +75,26 @@ public class UserService implements UserDetailsService {
     }
 
     //----- api cho admin
-    public List<UserResponse> getAllUser(){
-        List<User> users = userRepository.findAll();
+    public PageResponse<UserResponse> getAllUser(int pageNumber, int pageSize ){
+        // Tạo Pageable
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize,
+                Sort.by("createdAt").descending());
 
-        return users.stream()
+        // Query DB (Tự động tính limit/offset)
+        Page<User> pageData = userRepository.findAll(pageable);
+
+        // Map từ Entity sang Response DTO
+        List<UserResponse> userResponses = pageData.getContent().stream()
                 .map(userMapper::fromUser)
                 .collect(Collectors.toList());
+
+        return PageResponse.<UserResponse>builder()
+                .currentPage(pageNumber)
+                .pageSize(pageData.getSize())
+                .totalElements(pageData.getTotalElements())
+                .totalPage(pageData.getTotalPages())
+                .data(userResponses)
+                .build();
     }
 
     @Transactional
