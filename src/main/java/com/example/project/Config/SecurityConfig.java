@@ -57,6 +57,7 @@ public class SecurityConfig {
                         auth.requestMatchers("/auth/**",
                                         "/login/oauth2/**","/error",
                                         "/categories/**",
+                                        "/attributes/**",
                                         "/brands/**").permitAll()
                                 .requestMatchers("/users/**").hasAnyRole("USER","ADMIN")
                                 .requestMatchers(

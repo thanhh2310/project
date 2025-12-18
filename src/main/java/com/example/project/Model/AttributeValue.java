@@ -1,10 +1,7 @@
 package com.example.project.Model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Data
@@ -19,6 +16,8 @@ public class AttributeValue {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "attribute_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Attribute attribute;
 
     private String value;

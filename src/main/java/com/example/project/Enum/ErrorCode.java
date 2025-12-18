@@ -18,7 +18,9 @@ public enum ErrorCode {
     BRAND_NOT_FOUND(302, "Brand not found" ),
     CATEGORY_NOT_FOUND(304,"Category not found" ),
     CATEGORY_ALREADY_EXISTS(305,"Category have already existed" ),
-    INVALID_PARENT(306,"Category cannot be its own parent" );
+    INVALID_PARENT(306,"Category cannot be its own parent" ),
+    ATTRIBUTE_NOT_FOUND(307, "Attribute not found"),
+    ATTRIBUTE_ALREADY_EXISTS(308, "Attribute have already existed");
 
     ErrorCode(int code, String message) {
         this.code = code;
