@@ -1,20 +1,30 @@
 package com.example.project.Service;
 
 import com.example.project.Config.WebErrorConfig;
+import com.example.project.DTO.Request.AddAttributesToCategoryRequest;
+import com.example.project.DTO.Request.CategoryAttributeRequest;
 import com.example.project.DTO.Request.CategoryCreationRequest;
 import com.example.project.DTO.Request.UpdateCategoryRequest;
+import com.example.project.DTO.Response.CategoryAttributeResponse;
 import com.example.project.DTO.Response.CategoryResponse;
 import com.example.project.Enum.ErrorCode;
 import com.example.project.Mapper.CategoryMapper;
+import com.example.project.Model.Attribute;
 import com.example.project.Model.Category;
+import com.example.project.Model.CategoryAttribute;
+import com.example.project.Repository.AttributeRepository;
+import com.example.project.Repository.CategoryAttributeRepository;
 import com.example.project.Repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.Normalizer;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -23,6 +33,8 @@ import java.util.stream.Collectors;
 public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
+    private final AttributeRepository attributeRepository;
+    private final CategoryAttributeRepository categoryAttributeRepository;
     //---- for admin
     @Transactional
     public CategoryResponse createCategory(CategoryCreationRequest request){
@@ -118,6 +130,73 @@ public class CategoryService {
             throw new WebErrorConfig(ErrorCode.CATEGORY_NOT_FOUND);
         }
         categoryRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void addAttributeToCategory(Integer categoryId, AddAttributesToCategoryRequest request){
+        // 1. Tìm Category (Cha)
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new WebErrorConfig(ErrorCode.CATEGORY_NOT_FOUND));
+
+        // a. Lấy danh sách ID từ request gửi lên
+        List<Integer> attributeIds = request.getAttributes().stream()
+                .map(CategoryAttributeRequest::getAttributeId)
+                .collect(Collectors.toList());
+        // b. Query DB 1 lần duy nhất để lấy tất cả Attribute đó
+        List<Attribute> attributes = attributeRepository.findAllById(attributeIds);
+
+        // c. Chuyển List thành Map<ID, Attribute> để tí nữa tìm kiếm cho nhanh (O(1))
+        // Nếu không làm bước này, tí nữa phải chạy vòng lặp lồng nhau -> chậm
+        Map<Integer , Attribute> attributeMap = attributes.stream()
+                .collect(Collectors.toMap(Attribute::getId, Function.identity()));
+
+        // lay ra cac cap lien ket giua cac category va attribute da ton tai
+        List<CategoryAttribute> existingLinks = categoryAttributeRepository.findByCategoryId(categoryId);
+
+        // chuyen List thanh Map<Id, CategoryAttribute> de ty tim kiem cho nhanh
+        Map<Integer, CategoryAttribute> existingLinkMap = existingLinks.stream()
+                .collect(Collectors.toMap(
+                        link -> link.getAttribute().getId(),
+                        Function.identity()
+                ));
+
+        List<CategoryAttribute> toSaveList = new ArrayList<>();
+        for(CategoryAttributeRequest reqItem : request.getAttributes()){
+            Attribute attribute = attributeMap.get(reqItem.getAttributeId());
+            if (attribute==null) throw new WebErrorConfig(ErrorCode.ATTRIBUTE_NOT_FOUND);
+            if(existingLinkMap.containsKey(attribute.getId())){
+                CategoryAttribute existingLink = existingLinkMap.get(attribute.getId());
+                existingLink.setIsRequired(reqItem.getIsRequired());
+                existingLink.setIsFilterable(reqItem.getIsFilterable());
+
+                toSaveList.add(existingLink);
+            }else {
+                CategoryAttribute newLink = CategoryAttribute.builder()
+                        .category(category)
+                        .attribute(attribute)
+                        .isRequired(reqItem.getIsRequired())
+                        .isFilterable(reqItem.getIsFilterable())
+                        .build();
+                toSaveList.add(newLink);
+            }
+        }
+
+        // 3. Lưu tất cả vào bảng category_attributes (Batch Insert)
+        categoryAttributeRepository.saveAll(toSaveList);
+
+    }
+
+    // Api get data
+    @Transactional(readOnly = true)
+    public List<CategoryAttributeResponse> getAttributesByCategory(Integer categoryId){
+        List<CategoryAttribute> links = categoryAttributeRepository.findByCategoryId(categoryId);
+        return links.stream().map(link -> CategoryAttributeResponse.builder()
+                        .attributeId(link.getAttribute().getId())
+                        .attributeName(link.getAttribute().getName()) // Lấy tên từ bảng Attribute
+                        .isRequired(link.getIsRequired())
+                        .isFilterable(link.getIsFilterable())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     private String generateSlug(String name) {

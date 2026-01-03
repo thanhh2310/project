@@ -1,8 +1,10 @@
 package com.example.project.Controller;
 
+import com.example.project.DTO.Request.AddAttributesToCategoryRequest;
 import com.example.project.DTO.Request.CategoryCreationRequest;
 import com.example.project.DTO.Request.UpdateCategoryRequest;
 import com.example.project.DTO.Response.ApiResponse;
+import com.example.project.DTO.Response.CategoryAttributeResponse;
 import com.example.project.DTO.Response.CategoryResponse;
 import com.example.project.Service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -63,6 +65,27 @@ public class CategoryController {
         return ApiResponse.<Void>builder()
                 .code(200)
                 .message("delete successfully")
+                .build();
+    }
+
+    @PreAuthorize("hasAuthority('CATEGORY_MANAGER')")
+    @PostMapping("/addAttribute/{categoryId}")
+    public ApiResponse<Void> addAttributeToCategory(@PathVariable Integer categoryId,
+                                                    @RequestBody  AddAttributesToCategoryRequest request)
+    {
+        categoryService.addAttributeToCategory(categoryId, request);
+        return ApiResponse.<Void>builder()
+                .code(200)
+                .message("Add attributes successfully?")
+                .build();
+    }
+
+    @GetMapping("/attributeCategory")
+    public ApiResponse<List<CategoryAttributeResponse>> getAttributesByCategory(@RequestParam Integer categoryId){
+        return ApiResponse.<List<CategoryAttributeResponse>>builder()
+                .code(200)
+                .message("Get data successfully")
+                .data(categoryService.getAttributesByCategory(categoryId))
                 .build();
     }
 }
