@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "category_attributes")
+@EntityListeners(AuditingEntityListener.class)
 public class CategoryAttribute {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +36,7 @@ public class CategoryAttribute {
     @Column(name = "is_filterable")
     private Boolean isFilterable;
 
-    @Column(name = "created_at")
     @CreatedDate
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 }

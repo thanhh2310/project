@@ -184,6 +184,11 @@ public class CategoryService {
         // 3. Lưu tất cả vào bảng category_attributes (Batch Insert)
         categoryAttributeRepository.saveAll(toSaveList);
 
+        toSaveList.forEach(item ->
+                System.out.println("ID=" + item.getId()
+                        + " | createdAt=" + item.getCreatedAt())
+        );
+
     }
 
     // Api get data

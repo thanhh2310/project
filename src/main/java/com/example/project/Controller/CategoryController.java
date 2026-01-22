@@ -68,7 +68,7 @@ public class CategoryController {
                 .build();
     }
 
-    @PreAuthorize("hasAuthority('CATEGORY_MANAGER')")
+    @PreAuthorize("hasAuthority('CATEGORY_MANAGE')")
     @PostMapping("/addAttribute/{categoryId}")
     public ApiResponse<Void> addAttributeToCategory(@PathVariable Integer categoryId,
                                                     @RequestBody  AddAttributesToCategoryRequest request)
